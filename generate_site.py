@@ -32,7 +32,8 @@ template = """
         {items}
     </div>
     <div class="footer">
-        Recitations from <a href="https://quranicaudio.com">QuranicAudio.com</a> &bull;
+        Recitations from <a href="https://quranicaudio.com">QuranicAudio.com</a>
+        &nbsp;&bull;&nbsp;
         <a href="https://github.com/cpfair/qari-stats">GitHub</a>
     </div>
 </div>
@@ -69,7 +70,8 @@ max_time = max(x["time"] for x in stats.values())
 hz_exp_factor = vt_exp_factor = 1
 min_score = 10
 for qari_key, qstats in stats.items():
-    qstats["time_score"] = min_score + \
+    # NB we switch to "speed" here from "time."
+    qstats["speed_score"] = min_score + \
         math.pow((1 - (qstats["time"] - min_time) / (max_time - min_time)) * 100, hz_exp_factor) \
         / math.pow(100, hz_exp_factor) * (100 - min_score)
     qstats["register_score"] = min_score + \
@@ -78,7 +80,7 @@ for qari_key, qstats in stats.items():
 
 items = []
 qari_stats_lite = {}
-for qari_key, qstats in sorted(stats.items(), key=lambda x: x[1]["time_score"]):
+for qari_key, qstats in sorted(stats.items(), key=lambda x: x[1]["speed_score"]):
     name = qari_metadata[qari_key]["name"]
 
     # Mangle name to separate attributes like riwayah, "Taraweeh 14xx", etc.
@@ -97,7 +99,7 @@ for qari_key, qstats in sorted(stats.items(), key=lambda x: x[1]["time_score"]):
     items.append(
         """
 <div class="item" qari="{qari_key}">
-    <div class="speed"><span style="width: {time_score}%">&nbsp;</span></div>
+    <div class="speed"><span style="width: {speed_score}%">&nbsp;</span></div>
     <div class="controls">{name}<span class="control-button-group">
         <a class="fa fa-play-circle control-button audio-player" href="http://download.quranicaudio.com/quran/{rel_path}078.mp3"></a>
         <a class="fa fa-cloud-download control-button" href="https://quranicaudio.com/quran/{id}" target="_blank"></a>
@@ -105,7 +107,7 @@ for qari_key, qstats in sorted(stats.items(), key=lambda x: x[1]["time_score"]):
     <div class="register"><span style="width: {register_score}%">&nbsp;</span></div>
 </div>""".format(
             qari_key=qari_key,
-            time_score=qstats["time_score"],
+            speed_score=qstats["speed_score"],
             name=name + (" <span class=\"sub\">%s</span>" % sub if sub else ""),
             rel_path=qari_metadata[qari_key]["relative_path"],
             id=qari_metadata[qari_key]["id"],
@@ -113,7 +115,7 @@ for qari_key, qstats in sorted(stats.items(), key=lambda x: x[1]["time_score"]):
         ))
 
     qari_stats_lite[qari_key] = {
-        "time": qstats["time_score"],
+        "speed": qstats["speed_score"],
         "register": qstats["register_score"],
     }
 
@@ -121,6 +123,6 @@ rendered_site = template.format(
     items="".join(items),
     qari_stats=json.dumps(qari_stats_lite))
 
-minified_site = htmlmin.minify(rendered_site, remove_all_empty_space=True, remove_optional_attribute_quotes=False)
+minified_site = htmlmin.minify(rendered_site, remove_empty_space=True, remove_optional_attribute_quotes=False)
 
 open("site/index.html", "w").write(minified_site)
