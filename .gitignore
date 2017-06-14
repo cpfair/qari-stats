@@ -1,4 +1,4 @@
 *.json
-site/*.html
+site/
 *.wav
 *.mp3
