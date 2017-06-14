@@ -13,6 +13,8 @@ template = """
     <script src="https://use.fontawesome.com/8a3e800a96.js"></script>
     <meta name="viewport" content="width=device-width">
     <meta name="viewport" content="initial-scale=1.0">
+    <meta name="description" content="Sort Qur'an reciters by reading speed and voice pitch. Find qaris with low (or high) voices, or with slow (or fast) recitations.">
+    <title>Qari Stats - Find Qur'an reciters by reading speed and voice pitch</title>
 </head>
 <body>
 <div class="container content-sizing">
